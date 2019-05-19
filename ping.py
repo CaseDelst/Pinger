@@ -65,7 +65,7 @@ def animate(i):
     avgPatch = mpatches.Patch(color='orange', label='Avg')
     maxPatch = mpatches.Patch(color='red', label='Max')
     
-    plt.legend(loc='upper center', bbox_to_anchor=(0.5, 1.0),
+    plt.legend(loc='upper center', bbox_to_anchor=(0.5, 1.035),
                ncol=3, fancybox=True, shadow=True, handles=[minPatch, avgPatch, maxPatch])
 
     every_nth = 10
