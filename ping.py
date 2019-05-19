@@ -12,16 +12,22 @@ plt.rcParams.update({'font.size': 12})
 style.use('dark_background')
 fig = plt.figure()
 ax1 = fig.add_subplot(1,1,1)
-df = pd.DataFrame(columns=['Time', 'Min', 'Avg', 'Max'])
+df = pd.DataFrame(columns=['Time', 'Min', 'Avg', 'Max', 'Label?'])
 
+#Number of pings available on graph at any given time
 targetXTicks = 51
+labelSeparator = 15
 
+#Initialize DF
 for i in range(targetXTicks):
-    df = df.append({'Time' : "-00:00:" + (str(51 - i) if (51 - i) >= 10 else ('0' + str(51 - i))), 
-                    'Min' : 1, 
-                    'Avg' : 1, 
-                    'Max' : 1}, 
+    LabelVal = True if ((51 - i) % labelSeparator == 0) else False
+    df = df.append({'Time'   : "-00:00:" + (str(51 - i) if (51 - i) >= 10 else ('0' + str(51 - i))), 
+                    'Min'    : 1, 
+                    'Avg'    : 1, 
+                    'Max'    : 1, 
+                    'Label?' : LabelVal},
                     ignore_index=True)
+    
 
 def animate(i):
     global df
@@ -34,11 +40,18 @@ def animate(i):
         pingStats[i] = float(pingStats[i])
 
     #Add to already existing data frame
+    
+    
+    currentTime = str(datetime.now()).split(' ')[1][0 : -7]
+    secondsVal = int(currentTime[-2:])
+    LabelVal = True if (secondsVal % labelSeparator == 0) else False
+
     dfAppend = df.append({'Time' : str(datetime.now()).split(' ')[1][0 : -7], 
-                        'Min' : pingStats[0], 
-                        'Avg' : pingStats[1], 
-                        'Max' : pingStats[2]}, 
-                        ignore_index=True)
+                        'Min'    : pingStats[0], 
+                        'Avg'    : pingStats[1], 
+                        'Max'    : pingStats[2],
+                        'Label?' : LabelVal},
+                    ignore_index=True)
 
     
     while dfAppend.shape[0] > targetXTicks:
@@ -68,9 +81,8 @@ def animate(i):
     plt.legend(loc='upper center', bbox_to_anchor=(0.5, 1.035),
                ncol=3, fancybox=True, shadow=True, handles=[minPatch, avgPatch, maxPatch])
 
-    every_nth = 10
     for n, label in enumerate(ax1.xaxis.get_ticklabels()):
-        if n % every_nth != 0:
+        if df.iloc[n]['Label?'] == False:
             label.set_visible(False)
 
 
